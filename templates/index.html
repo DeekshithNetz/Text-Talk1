@@ -1,335 +1,325 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Font Awesome for Icons -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<title>Private Chat</title>
 
-  <title>Private Chat</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
-    }
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
 
-    body {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      background: linear-gradient(135deg, #1e1e2e, #3a3a5e);
-      color: white;
-    }
-    header {
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #1e1e2e, #3a3a5e);
+  color: white;
+}
+
+header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #1E1E2E; /* Dark background */
+  background: #1E1E2E;
   color: white;
   padding: 15px 20px;
   font-size: 22px;
   font-weight: bold;
-  font-family: 'Arial', sans-serif;
-  width: 100vw;  /* Full width */
-  margin: 0;  /* Remove any margins */
-  box-sizing: border-box; /* Ensure padding doesn’t cause overflow */
+  width: 100vw;
 }
 
 .icons a {
   color: white;
   font-size: 22px;
   margin-left: 15px;
-  transition: transform 0.3s ease, color 0.3s ease;
 }
 
 .icons a:hover {
-  color: #FFC107; /* Highlight effect on hover */
+  color: #FFC107;
   transform: scale(1.2);
 }
 
-.icons i {
-  vertical-align: middle;
+h2, h3 {
+  text-align: center;
+  margin-bottom: 10px;
 }
-    h2, h3 {
-      text-align: center;
-      margin-bottom: 10px;
-    }
 
-    select {
-      width: 100%;
-      max-width: 300px;
-      padding: 10px;
-      margin-bottom: 10px;
-      border: none;
-      border-radius: 5px;
-      background: #444;
-      color: white;
-    }
+select {
+  width: 100%;
+  max-width: 300px;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 5px;
+  background: #444;
+  color: white;
+}
 
-    #chat {
-      width: 100%;
-      max-width: 500px;
-      height: 60vh;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      padding: 10px;
-    }
+#chat {
+  width: 100%;
+  max-width: 500px;
+  height: 60vh;
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+}
 
-    /* Message styling */
-    .message-container {
-      display: flex;#
-      width: 100%;
-      margin: 8px 0;
-    }
+/* FIXED */
+.message-container {
+  display: flex;
+  width: 100%;
+  margin: 8px 0;
+}
 
-    .message {
-      padding: 12px 16px;
-      border-radius: 20px;
-      max-width: 70%;
-      word-wrap: break-word;
-      font-size: 14px;
-      box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);
-    }
+.message {
+  padding: 12px 16px;
+  border-radius: 20px;
+  max-width: 70%;
+  font-size: 14px;
+}
 
-    .sent {
-      background: #4CAF50;
-      color: white;
-      align-self: flex-end;
-      border-bottom-right-radius: 5px;
-      text-align: right;
-    }
+.sent {
+  background: #4CAF50;
+  color: white;
+  align-self: flex-end;
+}
 
-    .received {
-      background: #555;
-      align-self: flex-start;
-      border-bottom-left-radius: 5px;
-    }
+.received {
+  background: #555;
+  align-self: flex-start;
+}
 
-    /* Chat input */
-    .chat-input {
-      display: flex;
-      align-items: center;
-      width: 100%;
-      max-width: 500px;
-      margin-top: 10px;
-      background: #222;
-      border-radius: 30px;
-      padding: 5px;
-    }
+.chat-input {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 500px;
+  margin-top: 10px;
+  background: #222;
+  border-radius: 30px;
+  padding: 5px;
+}
 
-    input[type="text"] {
-      flex: 1;
-      padding: 12px;
-      border: none;
-      border-radius: 20px;
-      font-size: 16px;
-      text-align: center;
-      background: transparent;
-      color: white;
-      outline: none;
-    }
+input[type="text"] {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 20px;
+  background: transparent;
+  color: white;
+  outline: none;
+}
 
-    input[type="text"]::placeholder {
-      color: #bbb;
-    }
-
-    .send-button {
-      background: #4CAF50;
-      border: none;
-      padding: 10px;
-      border-radius: 50%;
-      cursor: pointer;
-      margin-left: 5px;
-      transition: 0.3s;
-    }
-
-    .send-button:hover {
-      background: #45a049;
-    }
-
-    .send-button img {
-      width: 24px;
-      height: 24px;
-    }
-
-    /* Responsive */
-    @media (max-width: 600px) {
-      body {
-        height: 100%;
-        justify-content: flex-start;
-        padding: 10px;
-      }
-      #chat {
-        width: 100%;
-        height: 70vh;
-      }
-      .chat-input {
-        width: 100%;
-      }
-    }0
-  </style>
+.send-button {
+  background: #4CAF50;
+  border: none;
+  padding: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+</style>
 </head>
+
 <body>
-    <header>
+
+<header>
   <h1>Text-Talk</h1>
   <div class="icons">
-    <a href="https://instagram.com/dikshith12" target="_blank">
-      <i class="fab fa-instagram"></i>
-    </a>
-    <a href="https://github.com/deekshithnetz" target="_blank">
-      <i class="fab fa-github"></i>
-    </a>
+    <a href="https://instagram.com/" target="_blank"><i class="fab fa-instagram"></i></a>
+    <a href="https://github.com/" target="_blank"><i class="fab fa-github"></i></a>
   </div>
 </header>
-  <h2>Welcome  <span id="username-display"> </span>!<a href="#" onclick="logout()">Logout</a></h2>
-  
 
+<h2>
+  Welcome <span id="username-display"></span>!
+  <a href="#" onclick="logout()">Logout</a>
+</h2>
 
+<h3>Select a user to chat with:</h3>
 
-  <h3>Select a user to chat with:</h3>
-  <select id="userSelect" onchange="setSelectedUser()">
-    <option value="">-- Select User --</option>
-    </option>
-    {% endfor %}
-  </select>
+<select id="userSelect">
+  <option value="">-- Select User --</option>
+</select>
 
-  <div id="chat"></div>
+<div id="chat"></div>
 
-  <div class="chat-input">
-    <input type="text" id="message" placeholder="Type a message..." onkeypress="handleKeyPress(event)">
-    <button class="send-button" onclick="sendMessage()">
-      <img src="https://cdn-icons-png.flaticon.com/512/724/724927.png" alt="Send">
-    </button>
-  </div>
+<div class="chat-input">
+  <input type="text" id="message" placeholder="Type a message..." onkeypress="handleKeyPress(event)">
+  <button class="send-button" onclick="sendMessage()">➤</button>
+</div>
+
 <script>
-    const socket = io("https://text-talk1.onrender.com", { withCredentials: true });
+let socket = null;
 let receiver = "";
 const currentUser = localStorage.getItem("username");
-document.getElementById("username-display").textContent = currentUser;
 
-document.addEventListener("DOMContentLoaded", async () => {
-  if (!currentUser) {
-    window.location.href = "login.html"; // redirect if not logged in
-    return;
+document.getElementById("username-display").textContent = currentUser || "";
+
+if (!currentUser) {
+  window.location.href = "login.html";
+}
+
+/* USERS */
+async function loadUsers() {
+  const res = await fetch("https://text-talk1.onrender.com/api/users", {
+    credentials: "include"
+  });
+
+  const data = await res.json();
+  const select = document.getElementById("userSelect");
+
+  select.innerHTML = `<option value="">-- Select User --</option>`;
+
+  (data.users || []).forEach(u => {
+    const opt = document.createElement("option");
+    opt.value = u.username;
+    opt.textContent = u.username;
+    select.appendChild(opt);
+  });
+}
+
+/* SELECT USER */
+document.getElementById("userSelect").addEventListener("change", (e) => {
+  receiver = e.target.value;
+
+  if (socket) {
+    socket.close();
   }
 
-  await loadUsers();
-
-  const userSelect = document.getElementById("userSelect");
-  userSelect.addEventListener("change", () => {
-    receiver = userSelect.value;
-    joinChat();
-    loadChat();
-  });
+  joinChat();
+  loadChat();
 });
 
-async function loadUsers() {
-  try {
-    const res = await fetch("https://text-talk1.onrender.com/api/users", {
-      credentials: "include"
-    });
-    const data = await res.json();
-    if (data.success) {
-      const userSelect = document.getElementById("userSelect");
-      userSelect.innerHTML = `<option value="">-- Select User --</option>`;
-      data.users.forEach(u => {
-        const opt = document.createElement("option");
-        opt.value = u.username;
-        opt.textContent = u.username;
-        userSelect.appendChild(opt);
-      });
-    }
-  } catch (err) {
-    console.error(err);
-  }
-}
-
+/* CONNECT WEBSOCKET */
 function joinChat() {
-  if (receiver) {
-    socket.emit("join_chat", { receiver });
-  }
+  if (!receiver) return;
+
+  socket = new WebSocket(
+    `wss://text-talk1.onrender.com/ws/chat/${receiver}`
+  );
+
+  socket.onopen = () => {
+    console.log("WebSocket connected");
+  };
+
+  socket.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+
+    displayMessage(
+      data.sender,
+      data.content,
+      data.timestamp
+    );
+  };
+
+  socket.onclose = () => {
+    console.log("WebSocket closed");
+  };
 }
 
+/* LOAD CHAT HISTORY */
 async function loadChat() {
+  if (!receiver) return;
+
+  const res = await fetch(
+    `https://text-talk1.onrender.com/api/messages/${receiver}`,
+    { credentials: "include" }
+  );
+
+  const data = await res.json();
+
   const chatDiv = document.getElementById("chat");
   chatDiv.innerHTML = "";
-  if (!receiver) return;
 
-  try {
-    const res = await fetch(`https://text-talk1.onrender.com/api/messages/${receiver}`, {
-      credentials: "include"
-    });
-    const data = await res.json();
-    if (data.success) {
-      data.messages.forEach(msg => {
-        const senderName = msg.sender === currentUser ? "YOU" : msg.sender;
-        displayMessage(senderName, msg.content, msg.timestamp);
-      });
-      chatDiv.scrollTop = chatDiv.scrollHeight;
-    }
-  } catch (err) {
-    console.error(err);
-  }
+  (data.messages || []).forEach(msg => {
+    displayMessage(msg.sender, msg.content, msg.timestamp);
+  });
 }
 
+/* SEND MESSAGE */
 function sendMessage() {
-  if (!receiver) return;
   const input = document.getElementById("message");
   const message = input.value.trim();
-  if (!message) return;
 
-  socket.emit("private_message", { receiver, message });
-  displayMessage("YOU", message, new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+  if (!message || !receiver || !socket) return;
+
+  socket.send(JSON.stringify({
+    message: message
+  }));
+
+  displayMessage(
+    "YOU",
+    message,
+    new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit"
+    })
+  );
+
   input.value = "";
 }
 
-socket.on("new_message", data => {
-  if (data.sender !== currentUser) {
-    displayMessage(data.sender, data.content, data.timestamp);
-  }
-});
+/* ENTER KEY */
+function handleKeyPress(e) {
+  if (e.key === "Enter") sendMessage();
+}
 
+/* UI */
 function displayMessage(sender, message, timestamp) {
   const chatDiv = document.getElementById("chat");
+
   const container = document.createElement("div");
+  container.className = "message-container";
+
   const bubble = document.createElement("div");
+  bubble.className = "message";
 
-  bubble.innerHTML = `<strong>${sender}:</strong> ${message} <br> <small>${timestamp}</small>`;
-  bubble.classList.add("message");
+  const isMine = sender === currentUser || sender === "YOU";
 
-  container.classList.add("message-container");
-  container.style.justifyContent = sender === currentUser || sender === "YOU" ? "flex-end" : "flex-start";
-  bubble.classList.add(sender === currentUser || sender === "YOU" ? "sent" : "received");
+  bubble.classList.add(isMine ? "sent" : "received");
+
+  bubble.innerHTML = `
+    <strong>${sender}</strong><br>
+    ${message}<br>
+    <small>${timestamp}</small>
+  `;
+
+  container.style.justifyContent = isMine ? "flex-end" : "flex-start";
 
   container.appendChild(bubble);
   chatDiv.appendChild(container);
+
   chatDiv.scrollTop = chatDiv.scrollHeight;
 }
 
-function handleKeyPress(event) {
-  if (event.key === "Enter") sendMessage();
-}
+/* LOGOUT */
 async function logout() {
-  try {
-    await fetch("https://text-talk1.onrender.com/api/logout", {
-      method: "GET",
-      credentials: "include" // send session cookie
-    });
-    localStorage.removeItem("username"); // clear stored username
-    window.location.href = "login.html"; // redirect to login page
-  } catch (err) {
-    console.error(err);
-    alert("Logout failed");
-  }
+  await fetch("https://text-talk1.onrender.com/api/logout", {
+    method: "POST",
+    credentials: "include"
+  });
+
+  localStorage.removeItem("username");
+  window.location.href = "login.html";
 }
+
+/* INIT */
+loadUsers();
 </script>
+
 </body>
 </html>

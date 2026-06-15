@@ -89,13 +89,34 @@
         </form>
         <a href="login.html" class="login-link">Already have an account? Login</a>
     </div>
-<script> document.addEventListener("DOMContentLoaded", () => {
+<script>
+document.addEventListener("DOMContentLoaded", () => {
   const registerForm = document.querySelector("form");
+  const button = registerForm.querySelector("button");
 
   registerForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const username = registerForm.username.value;
-    const password = registerForm.password.value;
+
+    const username = registerForm.username.value.trim();
+    const password = registerForm.password.value.trim();
+
+    if (!username || !password) {
+      alert("Please fill all fields");
+      return;
+    }
+
+    if (username.length < 3) {
+      alert("Username must be at least 3 characters");
+      return;
+    }
+
+    if (password.length < 4) {
+      alert("Password must be at least 4 characters");
+      return;
+    }
+
+    button.disabled = true;
+    button.textContent = "Registering...";
 
     try {
       const res = await fetch("https://text-talk1.onrender.com/api/register", {
@@ -105,20 +126,25 @@
         },
         body: JSON.stringify({ username, password })
       });
+
       const data = await res.json();
 
       if (data.success) {
         alert("Registered successfully! Please login.");
         window.location.href = "login.html";
       } else {
-        alert(data.message);
+        alert(data.message || "Registration failed");
       }
+
     } catch (err) {
       console.error(err);
-      alert("Server error");
+      alert("Server error. Try again.");
+
+    } finally {
+      button.disabled = false;
+      button.textContent = "Register";
     }
   });
 });
-</script>
-</body>
+</script></body>
 </html>

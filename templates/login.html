@@ -92,32 +92,48 @@
     <script>
 document.addEventListener("DOMContentLoaded", () => {
   const loginForm = document.querySelector("form");
+  const button = loginForm.querySelector("button");
 
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const username = loginForm.username.value;
-    const password = loginForm.password.value;
+
+    const username = loginForm.username.value.trim();
+    const password = loginForm.password.value.trim();
+
+    if (!username || !password) {
+      alert("Please fill all fields");
+      return;
+    }
+
+    button.disabled = true;
+    button.textContent = "Logging in...";
 
     try {
       const res = await fetch("https://text-talk1.onrender.com/api/login", {
         method: "POST",
-        credentials: "include", // important to send cookies
+        credentials: "include",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({ username, password })
       });
+
       const data = await res.json();
 
       if (data.success) {
         localStorage.setItem("username", username);
-        window.location.href = "index.html"; // redirect to chat page
+        window.location.href = "index.html";
       } else {
-        alert(data.message);
+        alert(data.message || "Login failed");
       }
+
     } catch (err) {
       console.error(err);
-      alert("Server error");
+      alert("Server error. Try again.");
+
+    } finally {
+      button.disabled = false;
+      button.textContent = "Login";
     }
   });
 });
