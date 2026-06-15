@@ -95,6 +95,7 @@ def api_logout():
 def api_users():
     users = User.query.filter(User.id != current_user.id).all()
     user_list = [{"username": u.username} for u in users]
+    print(user_list)
     return jsonify({"success": True, "users": user_list}), 200
 
 
