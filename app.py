@@ -8,7 +8,10 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)  # <- allow cross-origin requests with cookies/session
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(
+    app,
+    cors_allowed_origins=["https://texttalk.checkman121.workers.dev"]
+)
 
 app.config['SECRET_KEY'] = 'mysecret'
 
