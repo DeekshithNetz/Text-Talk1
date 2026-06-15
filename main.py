@@ -193,8 +193,9 @@ class ConnectionManager:
 manager = ConnectionManager()
 
 @app.websocket("/ws/chat/{receiver}")
-async def chat_socket(websocket: WebSocket, receiver: str, db: Session = Depends(get_db)):
-    await websocket.accept()
+async def chat_socket(websocket: WebSocket, receiver: str):
+
+    db = SessionLocal()
 
     session_id = websocket.cookies.get("session_id")
     if session_id not in sessions:
@@ -227,3 +228,6 @@ async def chat_socket(websocket: WebSocket, receiver: str, db: Session = Depends
 
     except WebSocketDisconnect:
         manager.disconnect(room, websocket)
+
+    finally:
+        db.close()
