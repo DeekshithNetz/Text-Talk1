@@ -169,7 +169,7 @@ def get_messages(receiver: str, request: Request, db: Session = Depends(get_db))
             {
                 "sender": m.sender,
                 "content": m.content,
-                "timestamp": m.timestamp.strftime("%H:%M")
+                "timestamp": m.timestamp.strftime("%I:%M %p")
             }
             for m in messages
         ]
@@ -229,7 +229,7 @@ async def chat_socket(websocket: WebSocket, receiver: str):
                 "content": message_text,
                 "timestamp": datetime.now(
     ZoneInfo("Asia/Kolkata")
-).strftime("%H:%M")
+).strftime("%I:%M %p")
             })
 
     except WebSocketDisconnect:
