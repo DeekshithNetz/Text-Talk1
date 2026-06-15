@@ -99,7 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const password = loginForm.password.value;
 
     try {
-      const res = await fetch("http://localhost:5000/api/login", {
+      const res = await fetch("https://text-talk1.onrender.com/api/login", {
         method: "POST",
         credentials: "include", // important to send cookies
         headers: {
@@ -111,7 +111,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (data.success) {
         localStorage.setItem("username", username);
-        window.location.href = "chat.html"; // redirect to chat page
+        window.location.href = "index.html"; // redirect to chat page
       } else {
         alert(data.message);
       }

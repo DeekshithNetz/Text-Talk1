@@ -210,7 +210,7 @@
     </button>
   </div>
 <script>
-    const socket = io("http://localhost:5000", { withCredentials: true });
+    const socket = io("https://text-talk1.onrender.com", { withCredentials: true });
 let receiver = "";
 const currentUser = localStorage.getItem("username");
 document.getElementById("username-display").textContent = currentUser;
@@ -233,7 +233,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 async function loadUsers() {
   try {
-    const res = await fetch("http://localhost:5000/api/users", {
+    const res = await fetch("https://text-talk1.onrender.com/api/users", {
       credentials: "include"
     });
     const data = await res.json();
@@ -264,7 +264,7 @@ async function loadChat() {
   if (!receiver) return;
 
   try {
-    const res = await fetch(`http://localhost:5000/api/messages/${receiver}`, {
+    const res = await fetch(`https://text-talk1.onrender.com/api/messages/${receiver}`, {
       credentials: "include"
     });
     const data = await res.json();
@@ -319,7 +319,7 @@ function handleKeyPress(event) {
 }
 async function logout() {
   try {
-    await fetch("http://localhost:5000/api/logout", {
+    await fetch("https://text-talk1.onrender.com/api/logout", {
       method: "GET",
       credentials: "include" // send session cookie
     });
