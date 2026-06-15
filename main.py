@@ -36,7 +36,7 @@ class Message(Base):
     receiver = Column(String(100), nullable=False)
     content = Column(Text, nullable=False)
     timestamp = Column(
-    DateTime,
+    DateTime(timezone=True),
     default=lambda: datetime.now(ZoneInfo("Asia/Kolkata"))
 )
 
