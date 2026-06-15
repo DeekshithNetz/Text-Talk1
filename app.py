@@ -104,6 +104,7 @@ def api_login():
 @login_required
 def api_logout():
     logout_user()
+    print("logged out")
     return jsonify({"success": True, "message": "Logged out successfully"}), 200
 
 
