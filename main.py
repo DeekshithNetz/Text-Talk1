@@ -6,6 +6,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 from datetime import datetime
 from typing import Dict, List
+from zoneinfo import ZoneInfo
 
 # ======================
 # DB SETUP (SQLAlchemy)
@@ -34,7 +35,10 @@ class Message(Base):
     sender = Column(String(100), nullable=False)
     receiver = Column(String(100), nullable=False)
     content = Column(Text, nullable=False)
-    timestamp = Column(DateTime, default=datetime.utcnow)
+    timestamp = Column(
+    DateTime,
+    default=lambda: datetime.now(ZoneInfo("Asia/Kolkata"))
+)
 
 
 Base.metadata.create_all(bind=engine)
@@ -223,7 +227,9 @@ async def chat_socket(websocket: WebSocket, receiver: str):
             await manager.broadcast(room, {
                 "sender": sender,
                 "content": message_text,
-                "timestamp": datetime.utcnow().strftime("%H:%M")
+                "timestamp": datetime.now(
+    ZoneInfo("Asia/Kolkata")
+).strftime("%H:%M")
             })
 
     except WebSocketDisconnect:
