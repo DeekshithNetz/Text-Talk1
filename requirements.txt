@@ -1,0 +1,8 @@
+'Flask
+Flask-SQLAlchemy
+Flask-Login
+Flask-SocketIO
+Flask-Cors
+python-socketio
+eventlet
+psycopg2-binary
