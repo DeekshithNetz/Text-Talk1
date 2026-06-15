@@ -7,15 +7,20 @@ from flask_cors import CORS
 
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True)  # <- allow cross-origin requests with cookies/session
+CORS(
+    app,
+    supports_credentials=True,
+    origins=["https://texttalk.checkman121.workers.dev"]
+) # <- allow cross-origin requests with cookies/session
 socketio = SocketIO(
     app,
-    cors_allowed_origins="*",
+    cors_allowed_origins=["https://texttalk.checkman121.workers.dev"],
     async_mode="threading"
 )
-
 app.config['SECRET_KEY'] = 'mysecret'
 
+app.config["SESSION_COOKIE_SAMESITE"] = "None"
+app.config["SESSION_COOKIE_SECURE"] = True
 # Neon PostgreSQL connection
 app.config['SQLALCHEMY_DATABASE_URI'] = (
     "postgresql://neondb_owner:npg_Ssjl0dDwk9Zo@ep-falling-dream-atv775dp-pooler.c-9.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
@@ -87,6 +92,8 @@ def api_login():
     user = User.query.filter_by(username=username, password=password).first()
     if user:
         login_user(user)
+        print("LOGIN OK:", username)
+        print("SESSION:", dict(session))
         session["username"] = username
         return jsonify({"success": True, "message": "Login successful"}), 200
 
