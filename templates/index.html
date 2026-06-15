@@ -261,15 +261,6 @@ function sendMessage() {
     message: message
   }));
 
-  displayMessage(
-    "YOU",
-    message,
-    new Date().toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit"
-    })
-  );
-
   input.value = "";
 }
 
@@ -288,12 +279,14 @@ function displayMessage(sender, message, timestamp) {
   const bubble = document.createElement("div");
   bubble.className = "message";
 
-  const isMine = sender === currentUser || sender === "YOU";
+  const isMine = sender === currentUser;
+
+  const displayName = isMine ? "You" : sender;
 
   bubble.classList.add(isMine ? "sent" : "received");
 
   bubble.innerHTML = `
-    <strong>${sender}</strong><br>
+    <strong>${displayName}</strong><br>
     ${message}<br>
     <small>${timestamp}</small>
   `;
