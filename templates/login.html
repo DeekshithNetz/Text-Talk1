@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Text-Talk</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #121212;
+            color: white;
+        }
+
+        .login-container {
+            background: #1E1E2E;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            width: 350px;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #FFC107;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        input[type="text"], input[type="password"] {
+            background: #2A2A3B;
+            color: white;
+        }
+
+        button {
+            width: 100%;
+            background: #0B93F6;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.3s ease;
+        }
+
+        button:hover {
+            background: #0071c2;
+        }
+
+        .register-link {
+            margin-top: 15px;
+            display: block;
+            text-decoration: none;
+            color: #FFC107;
+            font-size: 14px;
+        }
+
+        .register-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Text-Talk Login</h2>
+        <form method="POST">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+       <a href="register.html" class="register-link">Don't have an account? Register</a>
+    </div>
+    <script>
+document.addEventListener("DOMContentLoaded", () => {
+  const loginForm = document.querySelector("form");
+
+  loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const username = loginForm.username.value;
+    const password = loginForm.password.value;
+
+    try {
+      const res = await fetch("http://localhost:5000/api/login", {
+        method: "POST",
+        credentials: "include", // important to send cookies
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        localStorage.setItem("username", username);
+        window.location.href = "chat.html"; // redirect to chat page
+      } else {
+        alert(data.message);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Server error");
+    }
+  });
+});
+</script>
+</body>
+</html>
