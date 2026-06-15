@@ -171,7 +171,9 @@ def get_messages(receiver: str, request: Request, db: Session = Depends(get_db))
             {
                 "sender": m.sender,
                 "content": m.content,
-                "timestamp": m.timestamp.strftime("%I:%M %p")
+                "timestamp": m.timestamp.astimezone(
+    ZoneInfo("Asia/Kolkata")
+).strftime("%I:%M %p")
             }
             for m in messages
         ]
