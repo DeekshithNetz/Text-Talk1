@@ -25,7 +25,13 @@ db = SQLAlchemy(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = "login"
+
+@login_manager.unauthorized_handler
+def unauthorized():
+    return jsonify({
+        "success": False,
+        "message": "Login required"
+    }), 401
 
 # ===== Database Models =====
 class User(UserMixin, db.Model):
