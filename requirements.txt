@@ -1,8 +1,5 @@
-Flask
-gunicorn
-Flask-SQLAlchemy
-Flask-Login
-Flask-SocketIO
-Flask-Cors
-eventlet
+fastapi
+uvicorn[standard]
+sqlalchemy
 psycopg2-binary
+python-multipart
