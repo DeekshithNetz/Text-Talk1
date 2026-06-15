@@ -37,16 +37,12 @@ header {
   font-size: 22px;
   font-weight: bold;
   width: 100vw;
-  position: absolute;
-  top: 0;
 }
 
 .icons a {
   color: white;
   font-size: 22px;
   margin-left: 15px;
-  text-decoration: none;
-  transition: 0.3s;
 }
 
 .icons a:hover {
@@ -59,57 +55,15 @@ h2, h3 {
   margin-bottom: 10px;
 }
 
-/* LINK STYLING FOR LOGOUT */
-h2 a {
-  color: #ff6b6b;
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: normal;
-  margin-left: 10px;
-  border: 1px solid #ff6b6b;
-  padding: 2px 8px;
-  border-radius: 4px;
-}
-
-h2 a:hover {
-  background: #ff6b6b;
-  color: white;
-}
-
-/* USER LIST CONTAINER (Replacing Select) */
-#userList {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
+select {
   width: 100%;
-  max-width: 500px; /* Matches chat width */
-  margin-bottom: 15px;
-}
-
-/* INDIVIDUAL USER CARD */
-.user-item {
+  max-width: 300px;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 5px;
   background: #444;
   color: white;
-  padding: 10px 20px;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 14px;
-  border: 1px solid transparent;
-}
-
-.user-item:hover {
-  background: #555;
-  transform: translateY(-2px);
-  border-color: #666;
-}
-
-/* ACTIVE STATE (When a user is selected) */
-.user-item.active {
-  background: #4CAF50;
-  color: white;
-  box-shadow: 0 4px 10px rgba(76, 175, 80, 0.4);
 }
 
 #chat {
@@ -122,16 +76,6 @@ h2 a:hover {
   display: flex;
   flex-direction: column;
   padding: 10px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-}
-
-/* Scrollbar styling for chat */
-#chat::-webkit-scrollbar {
-  width: 6px;
-}
-#chat::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.2);
-  border-radius: 3px;
 }
 
 /* FIXED */
@@ -146,20 +90,17 @@ h2 a:hover {
   border-radius: 20px;
   max-width: 70%;
   font-size: 14px;
-  word-wrap: break-word;
 }
 
 .sent {
   background: #4CAF50;
   color: white;
   align-self: flex-end;
-  border-bottom-right-radius: 4px;
 }
 
 .received {
   background: #555;
   align-self: flex-start;
-  border-bottom-left-radius: 4px;
 }
 
 .chat-input {
@@ -171,12 +112,11 @@ h2 a:hover {
   background: #222;
   border-radius: 30px;
   padding: 5px;
-  border: 1px solid #444;
 }
 
 input[type="text"] {
   flex: 1;
-  padding: 12px 20px;
+  padding: 12px;
   border: none;
   border-radius: 20px;
   background: transparent;
@@ -190,24 +130,26 @@ input[type="text"] {
   padding: 10px;
   border-radius: 50%;
   cursor: pointer;
-  margin-left: 5px;
-  transition: 0.3s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
+.send-button {
+      background: #4CAF50;
+      border: none;
+      padding: 10px;
+      border-radius: 50%;
+      cursor: pointer;
+      margin-left: 5px;
+      transition: 0.3s;
+    }
 
-.send-button:hover {
-  background: #45a049;
-  transform: scale(1.05);
-}
+    .send-button:hover {
+      background: #45a049;
+    }
 
-.send-button img {
-  width: 20px;
-  height: 20px;
-  filter: brightness(0) invert(1); /* Makes icon white */
-}
-
+    .send-button img {
+      width: 24px;
+      height: 24px;
+    }
+    
 </style>
 </head>
 
@@ -221,33 +163,24 @@ input[type="text"] {
   </div>
 </header>
 
-<!-- Added some top margin to body content so it doesn't hide behind fixed header -->
-<div style="margin-top: 70px; width: 100%; display: flex; flex-direction: column; align-items: center;">
+<h2>
+  Welcome <span id="username-display"></span>!
+  <a href="#" onclick="logout()">Logout</a>
+</h2>
 
-  <h2>
-    Welcome <span id="username-display"></span>!
-    <a href="#" onclick="logout()">Logout</a>
-  </h2>
+<h3>Select a user to chat with:</h3>
 
-  <h3>Select a user to chat with:</h3>
+<select id="userSelect">
+  <option value="">-- Select User --</option>
+</select>
 
-  <!-- OLD SELECT REMOVED, NEW LIST ADDED -->
-  <div id="userList">
-    <!-- Users will be injected here by JS -->
-    <div style="color: #aaa; font-size: 14px;">Loading users...</div>
-  </div>
+<div id="chat"></div>
 
-  <div id="chat">
-    <!-- Messages go here -->
-  </div>
-
-  <div class="chat-input">
-    <input type="text" id="message" placeholder="Type a message..." onkeypress="handleKeyPress(event)" autocomplete="off">
-    <button class="send-button" onclick="sendMessage()">
+<div class="chat-input">
+  <input type="text" id="message" placeholder="Type a message..." onkeypress="handleKeyPress(event)">
+  <button class="send-button" onclick="sendMessage()">
       <img src="https://cdn-icons-png.flaticon.com/512/724/724927.png" alt="Send">
     </button>
-  </div>
-
 </div>
 
 <script>
@@ -263,100 +196,59 @@ if (!currentUser) {
 
 /* USERS */
 async function loadUsers() {
-  try {
-    const res = await fetch("https://text-talk1.onrender.com/api/users", {
-      credentials: "include"
-    });
+  const res = await fetch("https://text-talk1.onrender.com/api/users", {
+    credentials: "include"
+  });
 
-    const data = await res.json();
-    const listContainer = document.getElementById("userList");
-    listContainer.innerHTML = ""; // Clear loading text
+  const data = await res.json();
+  const select = document.getElementById("userSelect");
 
-    if (!data.users || data.users.length === 0) {
-      listContainer.innerHTML = "<div style='color:#aaa'>No users found.</div>";
-      return;
-    }
+  select.innerHTML = `<option value="">-- Select User --</option>`;
 
-    (data.users || []).forEach(u => {
-      // Skip showing current user in the list (optional, but usually better UX)
-      if (u.username === currentUser) return;
-
-      const div = document.createElement("div");
-      div.className = "user-item";
-      div.textContent = u.username;
-      div.dataset.username = u.username;
-      
-      // Add click event
-      div.addEventListener("click", () => {
-        selectUser(u.username, div);
-      });
-
-      listContainer.appendChild(div);
-    });
-  } catch (err) {
-    console.error("Failed to load users:", err);
-    document.getElementById("userList").innerHTML = "<div style='color:#ff6b6b'>Error loading users.</div>";
-  }
+  (data.users || []).forEach(u => {
+    const opt = document.createElement("option");
+    opt.value = u.username;
+    opt.textContent = u.username;
+    select.appendChild(opt);
+  });
 }
 
-/* SELECT USER LOGIC */
-function selectUser(username, element) {
-  // If clicking the same user, do nothing
-  if (receiver === username) return;
+/* SELECT USER */
+document.getElementById("userSelect").addEventListener("change", (e) => {
+  receiver = e.target.value;
 
-  receiver = username;
-
-  // Update Visuals: Remove 'active' class from all, add to clicked
-  document.querySelectorAll(".user-item").forEach(el => el.classList.remove("active"));
-  element.classList.add("active");
-
-  // Reset Chat
-  const chatDiv = document.getElementById("chat");
-  chatDiv.innerHTML = ""; // Clear previous messages
-  
-  // Connect
   if (socket) {
     socket.close();
   }
+
   joinChat();
   loadChat();
-}
+});
 
 /* CONNECT WEBSOCKET */
 function joinChat() {
   if (!receiver) return;
 
-  // Note: Ensure your backend supports standard WebSocket or Socket.io properly. 
-  // The original code used `new WebSocket` but included socket.io script.
-  // Keeping WebSocket logic as per your original request.
-  
   socket = new WebSocket(
     `wss://text-talk1.onrender.com/ws/chat/${receiver}`
   );
 
   socket.onopen = () => {
-    console.log("WebSocket connected to", receiver);
+    console.log("WebSocket connected");
   };
 
   socket.onmessage = (event) => {
-    try {
-      const data = JSON.parse(event.data);
-      displayMessage(
-        data.sender,
-        data.content,
-        data.timestamp
-      );
-    } catch (e) {
-      console.error("Error parsing message", e);
-    }
+    const data = JSON.parse(event.data);
+
+    displayMessage(
+      data.sender,
+      data.content,
+      data.timestamp
+    );
   };
 
   socket.onclose = () => {
     console.log("WebSocket closed");
-  };
-
-  socket.onerror = (err) => {
-    console.error("WebSocket Error", err);
   };
 }
 
@@ -364,22 +256,19 @@ function joinChat() {
 async function loadChat() {
   if (!receiver) return;
 
-  try {
-    const res = await fetch(
-      `https://text-talk1.onrender.com/api/messages/${receiver}`,
-      { credentials: "include" }
-    );
+  const res = await fetch(
+    `https://text-talk1.onrender.com/api/messages/${receiver}`,
+    { credentials: "include" }
+  );
 
-    const data = await res.json();
-    const chatDiv = document.getElementById("chat");
-    chatDiv.innerHTML = ""; // Ensure clean slate before loading history
+  const data = await res.json();
 
-    (data.messages || []).forEach(msg => {
-      displayMessage(msg.sender, msg.content, msg.timestamp);
-    });
-  } catch (err) {
-    console.error("Error loading chat history", err);
-  }
+  const chatDiv = document.getElementById("chat");
+  chatDiv.innerHTML = "";
+
+  (data.messages || []).forEach(msg => {
+    displayMessage(msg.sender, msg.content, msg.timestamp);
+  });
 }
 
 /* SEND MESSAGE */
@@ -387,20 +276,11 @@ function sendMessage() {
   const input = document.getElementById("message");
   const message = input.value.trim();
 
-  if (!message) return; // Allow empty send check if not connected yet
-  
-  // Show message immediately in UI (Optimistic UI)
-  if (receiver) {
-      displayMessage(currentUser, message, new Date().toLocaleTimeString());
-  }
+  if (!message || !receiver || !socket) return;
 
-  if (socket && socket.readyState === WebSocket.OPEN) {
-    socket.send(JSON.stringify({
-      message: message
-    }));
-  } else {
-    console.warn("Socket is not connected.");
-  }
+  socket.send(JSON.stringify({
+    message: message
+  }));
 
   input.value = "";
 }
@@ -421,17 +301,15 @@ function displayMessage(sender, message, timestamp) {
   bubble.className = "message";
 
   const isMine = sender === currentUser;
+
   const displayName = isMine ? "You" : sender;
 
   bubble.classList.add(isMine ? "sent" : "received");
 
-  // Basic sanitization to prevent HTML injection in messages
-  const safeMessage = message.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-
   bubble.innerHTML = `
     <strong>${displayName}</strong><br>
-    ${safeMessage}<br>
-    <small style="opacity:0.7; font-size: 10px;">${timestamp || ""}</small>
+    ${message}<br>
+    <small>${timestamp}</small>
   `;
 
   container.style.justifyContent = isMine ? "flex-end" : "flex-start";
@@ -444,15 +322,10 @@ function displayMessage(sender, message, timestamp) {
 
 /* LOGOUT */
 async function logout() {
-  try {
-    await fetch("https://text-talk1.onrender.com/api/logout", {
-      method: "POST",
-      credentials: "include"
-    });
-  } catch (e) {
-    // Continue with logout even if API fails
-    console.error(e);
-  }
+  await fetch("https://text-talk1.onrender.com/api/logout", {
+    method: "POST",
+    credentials: "include"
+  });
 
   localStorage.removeItem("username");
   window.location.href = "login.html";
